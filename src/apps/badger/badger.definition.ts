@@ -15,7 +15,6 @@ export const BADGER_DEFINITION = appDefinition({
       type: GroupType.POSITION,
       label: 'Rewards',
     },
-
     vault: {
       id: 'vault',
       type: GroupType.TOKEN,
@@ -25,11 +24,15 @@ export const BADGER_DEFINITION = appDefinition({
 
   tags: [AppTag.YIELD_AGGREGATOR],
   keywords: [],
-  links: {},
+  links: {
+    twitter: 'https://twitter.com/badgerdao',
+    discord: 'https://discord.com/invite/xSPFHHS',
+  },
 
   supportedNetworks: {
     [Network.ETHEREUM_MAINNET]: [AppAction.VIEW],
     [Network.ARBITRUM_MAINNET]: [AppAction.VIEW],
+    [Network.POLYGON_MAINNET]: [AppAction.VIEW],
   },
 
   primaryColor: '#fff',

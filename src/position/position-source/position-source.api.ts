@@ -7,6 +7,8 @@ import qs from 'qs';
 import { ContractType } from '~position/contract.interface';
 import { AbstractPosition, AppTokenPosition, ContractPosition } from '~position/position.interface';
 import { AppGroupsDefinition } from '~position/position.service';
+import { AppTokenSelectorKey } from '~position/selectors/app-token-selector.interface';
+import { TokenDependency } from '~position/selectors/token-dependency-selector.interface';
 
 import { PositionSource } from './position-source.interface';
 
@@ -61,5 +63,15 @@ export class ApiPositionSource implements PositionSource {
     const loader = contractType === ContractType.APP_TOKEN ? this.tokensDataLoader : this.positionsDataLoader;
     const results = await Promise.all(definitions.map(v => loader.load(v))).then(v => v.flat());
     return results as any as T[];
+  }
+
+  async getAppTokensBatch(queries: AppTokenSelectorKey[]) {
+    const { data } = await this.axios.post<(AppTokenPosition | null)[]>(`/v2/app-tokens/batch`, { queries });
+    return data;
+  }
+
+  async getTokenDependenciesBatch(queries: AppTokenSelectorKey[]) {
+    const { data } = await this.axios.post<(TokenDependency | null)[]>(`/v2/token-dependencies/batch`, { queries });
+    return data;
   }
 }

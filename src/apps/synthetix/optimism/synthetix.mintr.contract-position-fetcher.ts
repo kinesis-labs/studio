@@ -1,25 +1,11 @@
-import { Inject } from '@nestjs/common';
+import { PositionTemplate } from '~app-toolkit/decorators/position-template.decorator';
 
-import { Register } from '~app-toolkit/decorators';
-import { PositionFetcher } from '~position/position-fetcher.interface';
-import { ContractPosition } from '~position/position.interface';
-import { Network } from '~types/network.interface';
+import { SynthetixMintrContractPositionFetcher } from '../common/synthetix.mintr.contract-position-fetcher';
 
-import { SynthetixMintrContractPositionHelper } from '../helpers/synthetix.mintr.contract-position-helper';
-import { SYNTHETIX_DEFINITION } from '../synthetix.definition';
-
-const appId = SYNTHETIX_DEFINITION.id;
-const groupId = SYNTHETIX_DEFINITION.groups.mintr.id;
-const network = Network.OPTIMISM_MAINNET;
-
-@Register.ContractPositionFetcher({ appId, groupId, network })
-export class OptimismSynthetixMintrContractPositionFetcher implements PositionFetcher<ContractPosition> {
-  constructor(
-    @Inject(SynthetixMintrContractPositionHelper)
-    private readonly synthetixMintrContractPositionHelper: SynthetixMintrContractPositionHelper,
-  ) {}
-
-  async getPositions() {
-    return this.synthetixMintrContractPositionHelper.getPositions({ network });
-  }
+@PositionTemplate()
+export class OptimismSynthetixMintrContractPositionFetcher extends SynthetixMintrContractPositionFetcher {
+  groupLabel = 'Mintr';
+  isExcludedFromTvl = true;
+  snxAddress = '0x8700daec35af8ff88c16bdf0418774cb3d7599b4';
+  sUSDAddress = '0x8c6f28f2f1a3c87f0f938b96d27520d9751ec8d9';
 }

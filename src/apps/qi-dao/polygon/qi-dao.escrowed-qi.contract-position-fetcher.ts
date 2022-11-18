@@ -1,46 +1,33 @@
 import { Inject } from '@nestjs/common';
 
 import { APP_TOOLKIT, IAppToolkit } from '~app-toolkit/app-toolkit.interface';
-import { Register } from '~app-toolkit/decorators';
-import { buildDollarDisplayItem } from '~app-toolkit/helpers/presentation/display-item.present';
-import { getTokenImg } from '~app-toolkit/helpers/presentation/image.present';
-import { ContractType } from '~position/contract.interface';
-import { PositionFetcher } from '~position/position-fetcher.interface';
-import { ContractPosition } from '~position/position.interface';
-import { Network } from '~types/network.interface';
+import { PositionTemplate } from '~app-toolkit/decorators/position-template.decorator';
+import { GetTokenBalancesParams, GetTokenDefinitionsParams } from '~position/template/contract-position.template.types';
+import { VotingEscrowTemplateContractPositionFetcher } from '~position/template/voting-escrow.template.contract-position-fetcher';
 
-import { QI_DAO_DEFINITION } from '../qi-dao.definition';
+import { QiDaoContractFactory, QiDaoEscrowedQi } from '../contracts';
 
-@Register.ContractPositionFetcher({
-  appId: QI_DAO_DEFINITION.id,
-  groupId: QI_DAO_DEFINITION.groups.escrowedQi.id,
-  network: Network.POLYGON_MAINNET,
-})
-export class PolygonQiDaoEscrowedQiContractPositionFetcher implements PositionFetcher<ContractPosition> {
-  constructor(@Inject(APP_TOOLKIT) private readonly appToolkit: IAppToolkit) {}
+@PositionTemplate()
+export class PolygonQiDaoEscrowedQiContractPositionFetcher extends VotingEscrowTemplateContractPositionFetcher<QiDaoEscrowedQi> {
+  groupLabel = 'Escrowed QI';
+  veTokenAddress = '0x880decade22ad9c58a8a4202ef143c4f305100b3';
 
-  async getPositions() {
-    const network = Network.POLYGON_MAINNET;
-    const baseTokens = await this.appToolkit.getBaseTokenPrices(network);
-    const address = '0x880decade22ad9c58a8a4202ef143c4f305100b3';
-    const qiToken = baseTokens.find(v => v.symbol === 'QI')!;
-    const tokens = [qiToken];
+  constructor(
+    @Inject(APP_TOOLKIT) protected readonly appToolkit: IAppToolkit,
+    @Inject(QiDaoContractFactory) protected readonly contractFactory: QiDaoContractFactory,
+  ) {
+    super(appToolkit);
+  }
 
-    const contractPosition: ContractPosition = {
-      type: ContractType.POSITION,
-      address: address,
-      appId: QI_DAO_DEFINITION.id,
-      groupId: QI_DAO_DEFINITION.groups.escrowedQi.id,
-      network: Network.POLYGON_MAINNET,
-      dataProps: {},
-      displayProps: {
-        label: 'Escrowed QI',
-        secondaryLabel: buildDollarDisplayItem(qiToken.price),
-        images: [getTokenImg(qiToken.address, network)],
-      },
-      tokens,
-    };
+  getEscrowContract(address: string): QiDaoEscrowedQi {
+    return this.contractFactory.qiDaoEscrowedQi({ address, network: this.network });
+  }
 
-    return [contractPosition];
+  async getEscrowedTokenAddress({ contract }: GetTokenDefinitionsParams<QiDaoEscrowedQi>) {
+    return contract.Qi();
+  }
+
+  async getEscrowedTokenBalance({ address, contract }: GetTokenBalancesParams<QiDaoEscrowedQi>) {
+    return contract.userInfo(address).then(v => v.amount);
   }
 }

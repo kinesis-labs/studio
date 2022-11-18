@@ -1,25 +1,11 @@
-import { Inject } from '@nestjs/common';
+import { PositionTemplate } from '~app-toolkit/decorators/position-template.decorator';
 
-import { Register } from '~app-toolkit/decorators';
-import { PositionFetcher } from '~position/position-fetcher.interface';
-import { AppTokenPosition } from '~position/position.interface';
-import { Network } from '~types/network.interface';
+import { SynthetixSynthTokenFetcher } from '../common/synthetix.synth.token-fetcher';
 
-import { SynthetixSynthTokenHelper } from '../helpers/synthetix.synth.token-helper';
-import { SYNTHETIX_DEFINITION } from '../synthetix.definition';
-
-@Register.TokenPositionFetcher({
-  appId: SYNTHETIX_DEFINITION.id,
-  groupId: SYNTHETIX_DEFINITION.groups.synth.id,
-  network: Network.ETHEREUM_MAINNET,
-})
-export class EthereumSynthetixSynthTokenFetcher implements PositionFetcher<AppTokenPosition> {
-  constructor(@Inject(SynthetixSynthTokenHelper) private readonly tokenHelper: SynthetixSynthTokenHelper) {}
-
-  async getPositions() {
-    return this.tokenHelper.getTokens({
-      network: Network.ETHEREUM_MAINNET,
-      resolverAddress: '0x823be81bbf96bec0e25ca13170f5aacb5b79ba83',
-    });
-  }
+@PositionTemplate()
+export class EthereumSynthetixSynthTokenFetcher extends SynthetixSynthTokenFetcher {
+  groupLabel = 'Synths';
+  isExchangeable = true;
+  resolverAddress = '0x823be81bbf96bec0e25ca13170f5aacb5b79ba83';
+  sUSDAddress = '0x57ab1ec28d129707052df4df418d58a2d46d5f51';
 }

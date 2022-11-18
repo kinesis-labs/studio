@@ -15,10 +15,29 @@ export const CURVE_DEFINITION = appDefinition({
     telegram: 'https://t.me/curvefi',
   },
   groups: {
-    farm: { id: 'farm', type: GroupType.POSITION, label: 'Staking' },
-    pool: { id: 'pool', type: GroupType.TOKEN, label: 'Pools' },
-    votingEscrow: { id: 'votingEscrow', type: GroupType.POSITION, label: 'Voting Escrow' },
-    vestingEscrow: { id: 'vestingEscrow', type: GroupType.POSITION, label: 'Vesting' },
+    gauge: {
+      id: 'gauge',
+      type: GroupType.POSITION,
+      label: 'Staking',
+    },
+
+    pool: {
+      id: 'pool',
+      type: GroupType.TOKEN,
+      label: 'Pools',
+    },
+
+    votingEscrow: {
+      id: 'voting-escrow',
+      type: GroupType.POSITION,
+      label: 'Voting Escrow',
+    },
+
+    vestingEscrow: {
+      id: 'vesting-escrow',
+      type: GroupType.POSITION,
+      label: 'Vesting',
+    },
   },
   tags: [AppTag.LIQUIDITY_POOL],
   supportedNetworks: {
@@ -27,7 +46,6 @@ export const CURVE_DEFINITION = appDefinition({
     [Network.ETHEREUM_MAINNET]: [AppAction.VIEW],
     [Network.FANTOM_OPERA_MAINNET]: [AppAction.VIEW],
     [Network.GNOSIS_MAINNET]: [AppAction.VIEW],
-    [Network.HARMONY_MAINNET]: [AppAction.VIEW],
     [Network.OPTIMISM_MAINNET]: [AppAction.VIEW],
     [Network.POLYGON_MAINNET]: [AppAction.VIEW],
   },

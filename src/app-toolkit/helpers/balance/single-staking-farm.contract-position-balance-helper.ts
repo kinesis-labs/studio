@@ -3,7 +3,8 @@ import { BigNumberish } from 'ethers';
 import { compact, isArray, sumBy } from 'lodash';
 
 import { APP_TOOLKIT, IAppToolkit } from '~app-toolkit/app-toolkit.interface';
-import { EthersMulticall as Multicall } from '~multicall/multicall.ethers';
+import { BALANCE_LOCALSTORAGE_FLAGS } from '~balance/balance.utils';
+import { IMulticallWrapper } from '~multicall/multicall.interface';
 import { ContractPositionBalance } from '~position/position-balance.interface';
 import { ContractPosition, MetaType } from '~position/position.interface';
 import { Network } from '~types/network.interface';
@@ -18,7 +19,7 @@ export type SingleStakingContractStrategy<T> = (opts: { address: string; network
 export type SingleStakingStakedTokenBalanceStrategy<T> = (opts: {
   address: string;
   network: Network;
-  multicall: Multicall;
+  multicall: IMulticallWrapper;
   contract: T;
   contractPosition: ContractPosition<SingleStakingFarmDataProps>;
 }) => BigNumberish | Promise<BigNumberish>;
@@ -26,7 +27,7 @@ export type SingleStakingStakedTokenBalanceStrategy<T> = (opts: {
 export type SingleStakingRewardTokenBalanceStrategy<T> = (opts: {
   address: string;
   network: Network;
-  multicall: Multicall;
+  multicall: IMulticallWrapper;
   contract: T;
   contractPosition: ContractPosition<SingleStakingFarmDataProps>;
 }) => BigNumberish | BigNumberish[] | Promise<BigNumberish | BigNumberish[]>;
@@ -97,7 +98,12 @@ export class SingleStakingContractPositionBalanceHelper {
           drillBalance(v, rewardTokenBalancesRaw[i]?.toString() ?? '0'),
         );
 
-        const tokens = [stakedTokenBalance, ...rewardTokenBalances].filter(v => v.balanceUSD > 0);
+        const storage = BALANCE_LOCALSTORAGE_FLAGS.getStore();
+        const { includeZeroBalances } = storage ?? { includeZeroBalances: false };
+
+        const tokens = [stakedTokenBalance, ...rewardTokenBalances].filter(
+          v => includeZeroBalances || v.balanceUSD > 0,
+        );
         const balanceUSD = sumBy(tokens, t => t.balanceUSD);
 
         return {

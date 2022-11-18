@@ -5,26 +5,31 @@ import { Network } from '~types/network.interface';
 
 export const ACROSS_DEFINITION = appDefinition({
   id: 'across',
-  name: 'across',
+  name: 'Across',
   description: 'Across is the fastest, cheapest and most secure cross-chain bridge.',
   url: 'https://across.to',
   groups: {
-    pool: { id: 'pool', type: GroupType.TOKEN, label: 'Pool' },
+    v1Pool: {
+      id: 'v1-pool',
+      type: GroupType.TOKEN,
+      label: 'V1 Pools',
+    },
+    v2Pool: {
+      id: 'v2-pool',
+      type: GroupType.TOKEN,
+      label: 'V2 Pools',
+    },
   },
   tags: [AppTag.BRIDGE, AppTag.CROSS_CHAIN],
   links: {
     learn: 'https://docs.across.to/bridge/',
     github: 'https://github.com/across-protocol',
-    twitter: '',
-    telegram: '',
+    twitter: 'https://twitter.com/AcrossProtocol',
     discord: 'https://discord.gg/across',
-    medium: '',
+    medium: 'https://medium.com/across-protocol',
   },
   supportedNetworks: {
     [Network.ETHEREUM_MAINNET]: [AppAction.VIEW],
-    [Network.POLYGON_MAINNET]: [AppAction.VIEW],
-    [Network.ARBITRUM_MAINNET]: [AppAction.VIEW],
-    // [Network.BOBA_MAINNET]: [ProtocolAction.VIEW],
   },
   primaryColor: '#fff',
 });
